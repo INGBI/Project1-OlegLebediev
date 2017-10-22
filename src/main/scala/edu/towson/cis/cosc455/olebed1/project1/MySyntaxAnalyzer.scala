@@ -63,9 +63,47 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
 
   override def heading(): Unit = ???
 
-  override def variableDefine(): Unit = ???
+  override def variableDefine(): Unit = {
+    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.DEFB)) {
+      pars.push(Compiler.currentToken)
+      Compiler.Scanner.getNextToken()
+      regText()
+      if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.EQSIGN)) {
+        pars.push(Compiler.currentToken)
+        Compiler.Scanner.getNextToken()
+        regText()
+        if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BRACKETE)) {
+          pars.push(Compiler.currentToken)
+          Compiler.Scanner.getNextToken()
+          variableDefine()
+        }
+        else {
+          println("Syntax error. Expected: '" + CONSTANTS.BRACKETE + "'. Received: '" + Compiler.currentToken + "'")
+          System.exit(1)
+        }
+      }
+      else {
+        println("Syntax error. Expected: '" + CONSTANTS.EQSIGN + "'. Received: '" + Compiler.currentToken + "'")
+        System.exit(1)
+      }
+    }
+  }
 
-  override def variableUse(): Unit = ???
+  override def variableUse(): Unit = {
+    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.USEB)) {
+      pars.push(Compiler.currentToken)
+      Compiler.Scanner.getNextToken()
+      regText()
+      if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BRACKETE)) {
+        pars.push(Compiler.currentToken)
+        Compiler.Scanner.getNextToken()
+      }
+      else {
+        println("Syntax error. Expected: '" + CONSTANTS.BRACKETE + "'. Received: '" + Compiler.currentToken + "'")
+        System.exit(1)
+      }
+    }
+  }
 
   override def bold(): Unit = ???
 
