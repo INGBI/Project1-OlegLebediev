@@ -21,6 +21,7 @@ object CONSTANTS {
     val DEFB : String ="\\DEF["
     val EQSIGN : String ="="
     val USEB : String ="\\USE["
-    val REQTEXT : String = TEXT
-    val TEXT : String = _
+    val SPECIALCHAR : Array[Char] = Array('*','+','=','\\','!','#','[',']','(',')')
+    val KEYWORDS : Array[String] = Array(DOCB,DOCE,TITLEB,BRACKETE,HEADING,PARAB,PARAE,BOLD,LISTITEM,
+      NEWLINE,LINKB,ADDRESSB,ADDRESSE,IMAGEB,DEFB,EQSIGN,USEB)
 }
