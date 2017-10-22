@@ -57,12 +57,6 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     }
   }
 
-  override def body(): Unit = ???
-
-  override def paragraph(): Unit = ???
-
-  override def heading(): Unit = ???
-
   override def variableDefine(): Unit = {
     if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.DEFB)) {
       pars.push(Compiler.currentToken)
@@ -104,6 +98,25 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
       }
     }
   }
+  override def body(): Unit = {
+    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARAB)){
+      paragraph()
+      body()
+    }
+    else if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.NEWLINE)) {
+      newline()
+      body()
+    }
+    else {
+      //Not defined yet
+      innerText()
+      body()
+    }
+  }
+
+  override def paragraph(): Unit = ???
+
+  override def heading(): Unit = ???
 
   override def bold(): Unit = ???
 
