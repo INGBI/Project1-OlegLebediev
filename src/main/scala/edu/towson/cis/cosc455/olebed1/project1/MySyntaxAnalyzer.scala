@@ -26,7 +26,36 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     }
   }
 
-  override def title(): Unit = ???
+  override def title(): Unit = 
+  {
+    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.TITLEB)) {
+      pars.push(Compiler.currentToken)
+      Compiler.Scanner.getNextToken()
+      //calls for the regular text check
+      regText()
+      if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BRACKETE)) {
+        pars.push(Compiler.currentToken)
+        Compiler.Scanner.getNextToken()
+      }
+      else {
+        println("Syntax error. Expected '" + CONSTANTS.BRACKETE + "'. Received '" + Compiler.currentToken + "'")
+        System.exit(1)
+      }
+    }
+    else {
+      println("Syntax error. Expected: '" + CONSTANTS.TITLEB + "'. Received: '" + Compiler.currentToken + "'")
+      System.exit(1)
+    }
+  }
+  //Added the reg text needed in the title, and everywhere else where we have text
+  def regText(): Unit =
+  {
+    if (!(CONSTANTS.SPECIALCHAR contains Compiler.currentToken)) {
+      pars.push(Compiler.currentToken)
+      Compiler.Scanner.getNextToken()
+      regText()
+    }
+  }
 
   override def body(): Unit = ???
 
