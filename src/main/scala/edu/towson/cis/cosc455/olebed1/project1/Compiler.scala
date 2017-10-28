@@ -10,6 +10,7 @@ object Compiler {
   val Scanner = new MyLexicalAnalyzer
   val Parser = new MySyntaxAnalyzer
   val SemanticAnalyzer = new MySemanticsAnalyzer
+  var pos : Int = -1
 
   def main(args: Array[String]): Unit = {
     checkFile(args)
@@ -22,12 +23,12 @@ object Compiler {
     SemanticAnalyzer.toHTML()
   }
 
-  def readFile(file: String) = {
+  def readFile(file : String) = {
     val source = scala.io.Source.fromFile(file)
     fileContents = try source.mkString finally source.close()
   }
 
-  def checkFile(args: Array[String]) = {
+  def checkFile(args : Array[String]) = {
     if (args.length != 1) {
       println("USAGE ERROR: wrong number of args fool!")
       System.exit(1)

@@ -13,7 +13,7 @@ object CONSTANTS {
     val PARAE : String ="\\PARAE"
     val BOLD : String ="*"
     val LISTITEM : String ="+"
-    val NEWLINE : String = "\\"
+    val NEWLINE : String = "\\\\"
     val LINKB : String ="["
     val ADDRESSB : String ="("
     val ADDRESSE : String =")"
@@ -24,4 +24,5 @@ object CONSTANTS {
     val SPECIALCHAR : Array[Char] = Array('*','+','=','\\','!','#','[',']','(',')')
     val KEYWORDS : Array[String] = Array(DOCB,DOCE,TITLEB,BRACKETE,HEADING,PARAB,PARAE,BOLD,LISTITEM,
       NEWLINE,LINKB,ADDRESSB,ADDRESSE,IMAGEB,DEFB,EQSIGN,USEB)
+    val ENDOFLINE: Array[Char] = Array('\n','\r','\t',' ')
 }
