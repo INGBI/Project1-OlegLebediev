@@ -6,7 +6,7 @@ package edu.towson.cis.cosc455.olebed1.project1
 
 trait LexicalAnalyzer {
   def addChar() : Unit
-  def getChar() : Char
+  def getChar() : Unit
   def getNextToken() : Unit
   def lookup() : Boolean
 }

@@ -109,7 +109,7 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     }
     else {
       //Not defined yet
-      innerText()
+      //innerText()
       body()
     }
   }

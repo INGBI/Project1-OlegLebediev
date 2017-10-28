@@ -13,8 +13,8 @@ object Compiler {
   var pos : Int = -1
 
   def main(args: Array[String]): Unit = {
-    checkFile(args)
-    readFile(args(0))
+    //checkFile(args)
+    readFile("C:\\Users\\olebed1\\IdeaProjects\\Project1-OlegLebediev\\out\\artifacts\\project1_oleglebediev_jar\\Test2.mkd")
 
     Scanner.getNextToken()
     Parser.gittex()
