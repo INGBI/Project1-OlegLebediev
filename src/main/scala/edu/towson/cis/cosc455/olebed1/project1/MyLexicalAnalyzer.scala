@@ -14,8 +14,10 @@ class MyLexicalAnalyzer extends LexicalAnalyzer{
   }
 
   override def getChar(): Unit = {
-    Compiler.pos += 1
-    nextC = Compiler.fileContents.charAt(Compiler.pos)
+    if (Compiler.pos < fileL) {
+      Compiler.pos += 1
+      nextC = Compiler.fileContents.charAt(Compiler.pos)
+    }
   }
 
   def nonSpace() : Unit = {   //Calls get char until a non space character is found
@@ -25,73 +27,94 @@ class MyLexicalAnalyzer extends LexicalAnalyzer{
   }
 
   override def getNextToken(): Unit = {
-    fileL = Compiler.fileContents.length
+    fileL = Compiler.fileContents.length -1
     tokenS = ""
 
     getChar()
     nonSpace()
+    if (fileL != Compiler.pos) {
+      if (CONSTANTS.SPECIALCHAR.contains(nextC))
 
-    if (CONSTANTS.SPECIALCHAR.contains(nextC))
-      if (CONSTANTS.BOLD.contains(nextC)) {
-        addChar()
-        getChar()
-      }
-      else if (CONSTANTS.LISTITEM.contains(nextC)) {
-        addChar()
-        tokenS += readFully()
-      }
-      else if (CONSTANTS.SPECIALCHAR(3) == nextC) {
-        addChar()
-        tokenS += readFully()
-        if (CONSTANTS.BRACKETE.contains(nextC)) {
+        if (CONSTANTS.BOLD.contains(nextC)) {
           addChar()
+          getChar()
         }
-        if (CONSTANTS.DOCE.contains(tokenS.toUpperCase)) {
-          nonSpace()
-          if (Compiler.pos - fileL != 0) {
-            Compiler.pos -= 1
-            getNextToken()
-            println("Lexical error. There cannot be any symbols after \\END")
+        else if (CONSTANTS.LISTITEM.contains(nextC)) {
+          addChar()
+          tokenS += readFully()
+        }
+        else if (CONSTANTS.ADDRESSE.contains(nextC)) {
+          addChar()
+          getChar()
+        }
+        else if (CONSTANTS.SPECIALCHAR(3) == nextC) {
+          addChar()
+          tokenS += readFully()
+          if (CONSTANTS.SPECIALCHAR(3) == nextC) {
+            addChar()
+            Compiler.currentToken = tokenS
+            Compiler.pos += 1
+            return
+          }
+          if (CONSTANTS.BRACKETE.contains(nextC)) {
+            addChar()
+          }
+          if (CONSTANTS.DOCE == tokenS.toUpperCase) {
+            nonSpace()
+            if (Compiler.pos - fileL != 0) {
+              Compiler.pos -= 1
+              getNextToken()
+              println("Lexical error. There cannot be any symbols after \\END")
+              System.exit(1)
+            }
+          }
+        }
+        else if (CONSTANTS.HEADING.contains(nextC)) {
+          addChar()
+          tokenS += readFully()
+        }
+        else if (CONSTANTS.IMAGEB.charAt(0) == nextC) {
+          addChar()
+          getChar()
+          if (CONSTANTS.IMAGEB.charAt(1) == nextC) {
+            addChar()
+            if (lookup()) {
+              if (tokenS.substring(tokenS.length - 1, tokenS.length) == "\n" || tokenS.substring(tokenS.length - 1, tokenS.length) == "\r" || tokenS.substring(tokenS.length - 1, tokenS.length) == "\t") {
+                Compiler.currentToken = tokenS.substring(0, tokenS.length - 1)
+                return
+              }
+              else {
+                Compiler.currentToken = tokenS
+                return
+              }
+            }
+          }
+          else {
+            println("Lexical error. Illegal character after '!'. Received: '" + nextC + "'")
             System.exit(1)
           }
         }
+      if (CONSTANTS.SPECIALCHAR.contains(nextC)) {
+        addChar()
       }
-      else if (CONSTANTS.HEADING.contains(nextC)) {
+      else if (nextC.isLetterOrDigit) {
         addChar()
         tokenS += readFully()
-      }
-      else if (CONSTANTS.IMAGEB.charAt(0) == nextC) {
-        addChar()
-        getChar()
-        if (CONSTANTS.BRACKETE.contains(nextC)) {
-          addChar()
-        }
-        else {
-          println("Lexical error. Illegal character after '!'. Received: '" + nextC + "'")
-          System.exit(1)
-        }
-      }
-    if (CONSTANTS.SPECIALCHAR.contains(nextC)) {
-        addChar()
-      }
-    else if (nextC.isLetterOrDigit)
-      {
-        addChar()
-        tokenS += readFully()
-        if (nextC.equals(CONSTANTS.BRACKETE) || nextC.equals(CONSTANTS.PARAE) || nextC.equals(CONSTANTS.EQSIGN) || nextC.equals('\\')) {
+        if (nextC.toString.equals(CONSTANTS.ADDRESSE) || nextC.toString.equals(CONSTANTS.BRACKETE) || nextC.toString.equals(CONSTANTS.PARAE) || nextC.toString.equals(CONSTANTS.EQSIGN) || nextC.equals('\\')) {
           //Will decrement index so special characters aren't skipped
           Compiler.pos -= 1
         }
         Compiler.currentToken = tokenS
       }
-    if (lookup()) {
-      if (tokenS.substring(tokenS.length-1,tokenS.length) == "\n" || tokenS.substring(tokenS.length-1,tokenS.length) == "\r" || tokenS.substring(tokenS.length-1,tokenS.length) == "\t") {
-        Compiler.currentToken = tokenS.substring(0, tokenS.length - 1)
+      if (tokenS.length > 0 && lookup()) {
+        if (tokenS.substring(tokenS.length - 1, tokenS.length) == "\n" || tokenS.substring(tokenS.length - 1, tokenS.length) == "\r" || tokenS.substring(tokenS.length - 1, tokenS.length) == "\t") {
+          Compiler.currentToken = tokenS.substring(0, tokenS.length - 1)
+        }
+        else Compiler.currentToken = tokenS
       }
-      else Compiler.currentToken = tokenS
     }
   }
-  
+
   def readFully() : String = { //Reads in text until end of word, line or token
     var text: String = ""
     getChar()
