@@ -50,13 +50,19 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
   //Added the reg text needed in the title, and everywhere else where we have text
   def regText(): Unit =
   {
-    if (!(CONSTANTS.SPECIALCHAR contains Compiler.currentToken)) {
+    if (textCheck()) {
       pars.push(Compiler.currentToken)
       Compiler.Scanner.getNextToken()
       regText()
     }
+    else if (Compiler.pos == Compiler.Scanner.fileL) {}
   }
 
+  def textCheck(): Boolean = {
+    if (Compiler.currentToken.contains(':') || Compiler.currentToken.contains('.') || Compiler.currentToken.contains(',')) {return true}
+    if (Compiler.currentToken.contains("\n")) return Compiler.currentToken.length == Compiler.currentToken.filter(_.isLetterOrDigit).length+1
+    Compiler.currentToken.length == Compiler.currentToken.filter(_.isLetterOrDigit).length
+  }
   override def variableDefine(): Unit = {
     if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.DEFB)) {
       pars.push(Compiler.currentToken)
@@ -99,7 +105,8 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     }
   }
   override def body(): Unit = {
-    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARAB)){
+    if (Compiler.pos == Compiler.Scanner.fileL) {}
+    else if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARAB)){
       paragraph()
       body()
     }
@@ -108,23 +115,112 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
       body()
     }
     else {
-      //Not defined yet
-      //innerText()
+      innerText()
       body()
     }
   }
 
-  override def paragraph(): Unit = ???
+  def innerText(): Unit = {
 
-  override def heading(): Unit = ???
 
-  override def bold(): Unit = ???
+    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.USEB)) {
+      variableUse()
+      innerText()
+    }
+    else if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.HEADING)) {
+      heading()
+      innerText()
+    }
+    else if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BOLD)) {
+      bold()
+      innerText()
+    }
+    else if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.LISTITEM)) {
+      listItem()
+      innerText()
+    }
+    else if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.IMAGEB)) {
+      image()
+      innerText()
+    }
+    else if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.LINKB)) {
+      link()
+      innerText()
+    }
+    else if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.NEWLINE)) {
+      newline()
+      innerText()
+    }
+    else if (textCheck()) {
+      pars.push(Compiler.currentToken)
+      Compiler.Scanner.getNextToken()
+      innerText()
+    }
+  }
 
-  override def listItem(): Unit = ???
+  override def paragraph(): Unit = {
+    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARAB)) {
+      pars.push(Compiler.currentToken)
+      Compiler.Scanner.getNextToken()
+      if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.DEFB)) {
+        variableDefine()
+      }
+      innerText()
+
+      if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARAE)) {
+        pars.push(Compiler.currentToken)
+        Compiler.Scanner.getNextToken()
+      }
+      else {
+        println("Syntax error. Expected: '" + CONSTANTS.PARAE + "'. Received: '" + Compiler.currentToken + "'")
+        System.exit(1)
+      }
+    }
+    else {
+      println("Syntax error. Expected: '" + CONSTANTS.PARAB + "'. Received: '" + Compiler.currentToken + "'")
+      System.exit(1)
+    }
+  }
+
+  override def heading(): Unit = {
+    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.HEADING)) {
+      pars.push(Compiler.currentToken)
+      Compiler.Scanner.getNextToken()
+      regText()
+    }
+  }
+
+  override def bold(): Unit = {
+    if (Compiler.currentToken.equalsIgnoreCase((CONSTANTS.BOLD))) {
+      pars.push(Compiler.currentToken)
+      Compiler.Scanner.getNextToken()
+      regText()
+      if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BOLD)) {
+        pars.push(Compiler.currentToken)
+        Compiler.Scanner.getNextToken()
+      }
+      else {
+        println("Syntax error. Expected: '" + CONSTANTS.BOLD + "'. Received: '" + Compiler.currentToken + "'")
+        System.exit(1)
+      }
+    }
+  }
+
+  override def listItem(): Unit = {
+    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.LISTITEM)) {
+      pars.push(Compiler.currentToken)
+      Compiler.Scanner.getNextToken()
+    }
+  }
 
   override def link(): Unit = ???
 
   override def image(): Unit = ???
 
-  override def newline(): Unit = ???
+  override def newline(): Unit = {
+    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.NEWLINE)) {
+      pars.push(Compiler.currentToken)
+      Compiler.Scanner.getNextToken()
+    }
+  }
 }
