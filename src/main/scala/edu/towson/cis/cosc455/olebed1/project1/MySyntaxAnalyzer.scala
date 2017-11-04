@@ -191,7 +191,7 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
   }
 
   override def bold(): Unit = {
-    if (Compiler.currentToken.equalsIgnoreCase((CONSTANTS.BOLD))) {
+    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BOLD)) {
       pars.push(Compiler.currentToken)
       Compiler.Scanner.getNextToken()
       regText()
@@ -213,9 +213,71 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     }
   }
 
-  override def link(): Unit = ???
+  override def link(): Unit = {
+    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.LINKB)) {
+      pars.push(Compiler.currentToken)
+      Compiler.Scanner.getNextToken()
+      regText()
+      if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BRACKETE)) {
+        pars.push(Compiler.currentToken)
+        Compiler.Scanner.getNextToken()
+        if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.ADDRESSB)) {
+          pars.push(Compiler.currentToken)
+          Compiler.Scanner.getNextToken()
+          regText()
+          if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.ADDRESSE)) {
+            pars.push(Compiler.currentToken)
+            Compiler.Scanner.getNextToken()
+          }
+          else {
+            println("Syntax error. Expected: '" + CONSTANTS.ADDRESSE + "'. Received: '" + Compiler.currentToken + "'")
+            System.exit(1)
+          }
+        }
+        else {
+          println("Syntax error. Expected: '" + CONSTANTS.ADDRESSB + "'. Received: '" + Compiler.currentToken + "'")
+          System.exit(1)
+        }
+      }
+      else {
+        println("Syntax error. Expected: '" + CONSTANTS.BRACKETE + "'. Received: '" + Compiler.currentToken + "'")
+        System.exit(1)
+      }
+    }
+  }
 
-  override def image(): Unit = ???
+  override def image(): Unit = {
+    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.IMAGEB)) {
+      pars.push(Compiler.currentToken)
+      Compiler.Scanner.getNextToken()
+      regText()
+      if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BRACKETE)) {
+        pars.push(Compiler.currentToken)
+        Compiler.Scanner.getNextToken()
+        if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.ADDRESSB)) {
+          pars.push(Compiler.currentToken)
+          Compiler.Scanner.getNextToken()
+          regText()
+          if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.ADDRESSE)) {
+            pars.push(Compiler.currentToken)
+            Compiler.Scanner.getNextToken()
+          }
+          else {
+            println("Syntax error. Expected: '" + CONSTANTS.ADDRESSE + "'. Received: '" + Compiler.currentToken + "'")
+            System.exit(1)
+          }
+        }
+        else {
+          println("Syntax error. Expected: '" + CONSTANTS.ADDRESSB + "'. Received: '" + Compiler.currentToken + "'")
+          System.exit(1)
+        }
+      }
+      else {
+        println("Syntax error. Expected: '" + CONSTANTS.BRACKETE + "'. Received: '" + Compiler.currentToken + "'")
+        System.exit(1)
+      }
+    }
+  }
 
   override def newline(): Unit = {
     if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.NEWLINE)) {
