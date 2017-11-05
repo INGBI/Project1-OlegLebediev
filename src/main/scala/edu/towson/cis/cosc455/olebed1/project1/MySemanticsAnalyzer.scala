@@ -21,19 +21,19 @@ class MySemanticsAnalyzer {
     while (semPars.nonEmpty)
     {
       if (token.equalsIgnoreCase(CONSTANTS.DOCB)) {
-        outStack.push("<html>")
+        outStack.push("<html>\n")
         token = semPars.pop()
       }
       else if (token.equalsIgnoreCase(CONSTANTS.TITLEB)) {
-        outStack.push("<head>")
-        outStack.push("<title>")
+        outStack.push("<head>\n")
+        outStack.push("<title>\n")
         token = semPars.pop()
         while (!CONSTANTS.KEYWORDS.contains(token)) {
           outStack.push(token +" ")
           token = semPars.pop()
         }
-        outStack.push("</title>")
-        outStack.push("</head>")
+        outStack.push("</title>\n")
+        outStack.push("</head>\n")
         token = semPars.pop()
         while (token == CONSTANTS.DEFB)
         {
@@ -54,7 +54,7 @@ class MySemanticsAnalyzer {
           outStack.push(token+" ")
           token = semPars.pop()
         }
-        outStack.push("</h1>")
+        outStack.push("</h1>\n")
       }
       else if (token.equalsIgnoreCase(CONSTANTS.PARAB)) {
         outStack.push("<p>")
@@ -72,7 +72,7 @@ class MySemanticsAnalyzer {
         }
       }
       else if (token.equalsIgnoreCase(CONSTANTS.PARAE)) {
-        outStack.push("</p>")
+        outStack.push("</p>\n")
         token = semPars.pop()
         for (i <- 0 until countVarPar)
         {
@@ -87,20 +87,20 @@ class MySemanticsAnalyzer {
           outStack.push(token+" ")
           token = semPars.pop()
         }
-        outStack.push("</b>")
+        outStack.push("</b>\n")
         token = semPars.pop()
       }
       else if (token.equalsIgnoreCase(CONSTANTS.LISTITEM)) {
         outStack.push("<li>")
         token = semPars.pop()
-        while (!CONSTANTS.KEYWORDS.contains(token) && !CONSTANTS.SPECIALCHAR.contains(token)) {
+        while (!CONSTANTS.KEYWORDS.contains(token) && !CONSTANTS.SPECIALCHAR.contains(token) && token!="\n" ) {
           outStack.push(token+" ")
           token = semPars.pop()
         }
-        outStack.push("</li>")
+        outStack.push("</li>\n")
       }
       else if (token.equalsIgnoreCase(CONSTANTS.NEWLINE)) {
-        outStack.push("<br>")
+        outStack.push("<br>\n")
         token = semPars.pop()
       }
       else if (token.equalsIgnoreCase(CONSTANTS.LINKB)) {
@@ -133,7 +133,7 @@ class MySemanticsAnalyzer {
         outStack.push(token)
         outStack.push("\" alt=\"")
         outStack.push(temp)
-        outStack.push("\">")
+        outStack.push("\">\n")
         semPars.pop()
         token = semPars.pop()
       }
@@ -155,14 +155,14 @@ class MySemanticsAnalyzer {
         token = semPars.pop()
       }
       else if (token.equalsIgnoreCase(CONSTANTS.DOCE)) {
-        outStack.push("</html>")
+        outStack.push("</html>\n")
       }
       else {
         outStack.push(token+" ")
         token = semPars.pop()
       }
       if (token.equalsIgnoreCase(CONSTANTS.DOCE)) {
-        outStack.push("</html>")
+        outStack.push("</html>\n")
       }
     }
 

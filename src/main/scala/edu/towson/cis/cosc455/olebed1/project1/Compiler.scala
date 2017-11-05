@@ -16,7 +16,7 @@ object Compiler {
   def main(args: Array[String]): Unit = {
     //checkFile(args)
     //filename = args(0)
-    readFile("C:\\Users\\olebed1\\IdeaProjects\\Project1-OlegLebediev\\out\\artifacts\\project1_oleglebediev_jar\\Test2.gtx")
+    readFile("C:\\Users\\Oleg\\IdeaProjects\\Project1-OlegLebediev\\out\\artifacts\\project1_oleglebediev_jar\\Test4.gtx")
 
     Scanner.getNextToken()
     Parser.gittex()

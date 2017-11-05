@@ -97,7 +97,7 @@ class MyLexicalAnalyzer extends LexicalAnalyzer{
       if (CONSTANTS.SPECIALCHAR.contains(nextC)) {
         addChar()
       }
-      else if (nextC.isLetterOrDigit) {
+      else if (nextC.isLetterOrDigit ||nextC==':' || nextC=='.' || nextC==',') {
         addChar()
         tokenS += readFully()
         if (nextC.toString.equals(CONSTANTS.ADDRESSE) || nextC.toString.equals(CONSTANTS.BRACKETE) || nextC.toString.equals(CONSTANTS.PARAE) || nextC.toString.equals(CONSTANTS.EQSIGN) || nextC.equals('\\')) {
