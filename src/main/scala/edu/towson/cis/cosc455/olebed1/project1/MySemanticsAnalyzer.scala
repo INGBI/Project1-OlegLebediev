@@ -12,8 +12,10 @@ class MySemanticsAnalyzer {
   var semPars = new scala.collection.mutable.Stack[String]
   var varName = new scala.collection.mutable.Stack[String]
   var varMean = new scala.collection.mutable.Stack[String]
+  var varParName = new scala.collection.mutable.Stack[String]
+  var varParMean = new scala.collection.mutable.Stack[String]
   var token : String = ""
-  var countVarPar = 0
+  var ifPar = 0
   def toHTML() =
   {
     semPars = Compiler.Parser.pars.reverse
@@ -59,26 +61,12 @@ class MySemanticsAnalyzer {
       else if (token.equalsIgnoreCase(CONSTANTS.PARAB)) {
         outStack.push("<p>")
         token = semPars.pop()
-        while (token == CONSTANTS.DEFB)
-        {
-          if (token.equalsIgnoreCase(CONSTANTS.DEFB)) {
-            countVarPar +=1
-            varName.push(semPars.pop())
-            semPars.pop()
-            varMean.push(semPars.pop())
-            semPars.pop()
-            token = semPars.pop()
-          }
-        }
+        ifPar = 1
       }
       else if (token.equalsIgnoreCase(CONSTANTS.PARAE)) {
         outStack.push("</p>\n")
         token = semPars.pop()
-        for (i <- 0 until countVarPar)
-        {
-          varName.pop()
-          varMean.pop()
-        }
+        ifPar = 0
       }
       else if (token.equalsIgnoreCase(CONSTANTS.BOLD)) {
         outStack.push("<b>")
@@ -93,11 +81,38 @@ class MySemanticsAnalyzer {
       else if (token.equalsIgnoreCase(CONSTANTS.LISTITEM)) {
         outStack.push("<li>")
         token = semPars.pop()
-        while (!CONSTANTS.KEYWORDS.contains(token) && !CONSTANTS.SPECIALCHAR.contains(token) && token!="\n" ) {
+        while (!CONSTANTS.KEYWORDS.contains(token) && !CONSTANTS.SPECIALCHAR.contains(token)) {
           outStack.push(token+" ")
           token = semPars.pop()
         }
-        outStack.push("</li>\n")
+        while(token.equalsIgnoreCase(CONSTANTS.USEB)) {
+            var name: String = semPars.pop()
+            semPars.pop()
+          if (ifPar==0) {
+            if (varName.contains(name)) {
+              outStack.push(" " + varMean(varName.indexOf(name, 0)) + " ")
+            }
+            else {
+              println("Static Semantic Error: Variable with name: [" +name+ "] has not been defined")
+              System.exit(1)
+            }
+          }
+          else
+          {
+            if (varParName.contains(name)) {
+              outStack.push(" " + varParMean(varParName.indexOf(name, 0)) + " ")
+            }
+            else if (varName.contains(name)) {
+              outStack.push(" " + varMean(varName.indexOf(name, 0)) + " ")
+            }
+            else if (!varParName.contains(name) || !varName.contains(name)) {
+              println("Static Semantic Error: Variable with name: [" +name+ "] has not been defined")
+              System.exit(1)
+            }
+          }
+          token = semPars.pop()
+        }
+        outStack.push("</li>")
       }
       else if (token.equalsIgnoreCase(CONSTANTS.NEWLINE)) {
         outStack.push("<br>\n")
@@ -137,32 +152,55 @@ class MySemanticsAnalyzer {
         semPars.pop()
         token = semPars.pop()
       }
+      else if (token.equalsIgnoreCase(CONSTANTS.DEFB)) {
+          if (ifPar == 0) {
+            varName.push(semPars.pop())
+            semPars.pop()
+            varMean.push(semPars.pop())
+            semPars.pop()
+            token = semPars.pop()
+          }
+          else {
+            varParName.push(semPars.pop())
+            semPars.pop()
+            varParMean.push(semPars.pop())
+            semPars.pop()
+            token = semPars.pop()
+          }
+        }
       else if (token.equalsIgnoreCase(CONSTANTS.USEB)) {
         var name: String = semPars.pop()
         semPars.pop()
-        for (i <- 0 until varName.length)
-        {
-          if(varName.equals(name))
-          {
-            outStack.push(varMean(i))
+          if (ifPar==0) {
+            if (varName.contains(name)) {
+              outStack.push(" " + varMean(varName.indexOf(name, 0)) + " ")
+            }
+            else {
+              println("Static Semantic Error: Variable with name: [" +name+ "] has not been defined")
+              System.exit(1)
+            }
           }
-          else if (i == varName.length-1)
+          else
           {
-            println("Static Semantic Error: Variable by that name has not been defined")
-            System.exit(1)
+            if (varParName.contains(name)) {
+              outStack.push(" " + varParMean(varParName.indexOf(name, 0)) + " ")
+            }
+            else if (varName.contains(name)) {
+              outStack.push(" " + varMean(varName.indexOf(name, 0)) + " ")
+            }
+            else if (!varParName.contains(name) || !varName.contains(name)) {
+              println("Static Semantic Error: Variable with name: [" +name+ "] has not been defined")
+              System.exit(1)
+            }
           }
-        }
         token = semPars.pop()
       }
       else if (token.equalsIgnoreCase(CONSTANTS.DOCE)) {
         outStack.push("</html>\n")
       }
-      else {
+      else if (!CONSTANTS.KEYWORDS.contains(token)) {
         outStack.push(token+" ")
         token = semPars.pop()
-      }
-      if (token.equalsIgnoreCase(CONSTANTS.DOCE)) {
-        outStack.push("</html>\n")
       }
     }
 
