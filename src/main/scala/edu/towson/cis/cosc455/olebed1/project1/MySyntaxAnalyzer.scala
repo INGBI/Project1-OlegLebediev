@@ -9,8 +9,8 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.DOCB)) {
       pars.push(Compiler.currentToken)
       Compiler.Scanner.getNextToken()
-      title()
       variableDefine()
+      title()
       body()
       if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.DOCE)){
         pars.push(Compiler.currentToken)
@@ -106,7 +106,7 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
   }
   override def body(): Unit = {
     if (Compiler.pos == Compiler.Scanner.fileL) {}
-    else if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARAB)){
+    else if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARAB) || Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARAE)){
       paragraph()
       body()
     }

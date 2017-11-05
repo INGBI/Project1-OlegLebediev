@@ -32,72 +32,87 @@ class MyLexicalAnalyzer extends LexicalAnalyzer{
 
     getChar()
     nonSpace()
-    if (fileL != Compiler.pos) {
-      if (CONSTANTS.SPECIALCHAR.contains(nextC))
-
-        if (CONSTANTS.BOLD.contains(nextC)) {
+    if (fileL != Compiler.pos) {}
+    if (CONSTANTS.SPECIALCHAR.contains(nextC)) {
+      if (CONSTANTS.BOLD.contains(nextC)) {
+        addChar()
+        getChar()
+      }
+      else if (CONSTANTS.LISTITEM.contains(nextC)) {
+        addChar()
+        tokenS += readFully()
+      }
+      else if (CONSTANTS.ADDRESSE.contains(nextC)) {
+        addChar()
+        getChar()
+      }
+      else if (CONSTANTS.SPECIALCHAR(3) == nextC) {
+        addChar()
+        tokenS += readFully()
+        if (CONSTANTS.SPECIALCHAR(3) == nextC) {
           addChar()
-          getChar()
+          Compiler.currentToken = tokenS
+          Compiler.pos += 1
+          return
         }
-        else if (CONSTANTS.LISTITEM.contains(nextC)) {
+        if (CONSTANTS.SPECIALCHAR(6) == nextC) {
           addChar()
-          tokenS += readFully()
+          Compiler.currentToken = tokenS
+          return
         }
-        else if (CONSTANTS.ADDRESSE.contains(nextC)) {
+        if (CONSTANTS.BRACKETE.contains(nextC)) {
           addChar()
-          getChar()
         }
-        else if (CONSTANTS.SPECIALCHAR(3) == nextC) {
-          addChar()
-          tokenS += readFully()
-          if (CONSTANTS.SPECIALCHAR(3) == nextC) {
-            addChar()
-            Compiler.currentToken = tokenS
-            Compiler.pos += 1
-            return
-          }
-          if (CONSTANTS.BRACKETE.contains(nextC)) {
-            addChar()
-          }
-          if (CONSTANTS.DOCE == tokenS.toUpperCase) {
-            nonSpace()
-            if (Compiler.pos - fileL != 0) {
-              Compiler.pos -= 1
-              getNextToken()
-              println("Lexical error. There cannot be any symbols after \\END")
-              System.exit(1)
-            }
-          }
-        }
-        else if (CONSTANTS.HEADING.contains(nextC)) {
-          addChar()
-          tokenS += readFully()
-        }
-        else if (CONSTANTS.IMAGEB.charAt(0) == nextC) {
-          addChar()
-          getChar()
-          if (CONSTANTS.IMAGEB.charAt(1) == nextC) {
-            addChar()
-            if (lookup()) {
-              if (tokenS.substring(tokenS.length - 1, tokenS.length) == "\n" || tokenS.substring(tokenS.length - 1, tokenS.length) == "\r" || tokenS.substring(tokenS.length - 1, tokenS.length) == "\t") {
-                Compiler.currentToken = tokenS.substring(0, tokenS.length - 1)
-                return
-              }
-              else {
-                Compiler.currentToken = tokenS
-                return
-              }
-            }
-          }
-          else {
-            println("Lexical error. Illegal character after '!'. Received: '" + nextC + "'")
+        if (CONSTANTS.DOCE == tokenS.toUpperCase) {
+          nonSpace()
+          if (Compiler.pos - fileL != 0) {
+            Compiler.pos -= 1
+            getNextToken()
+            println("Lexical error. There cannot be any symbols after \\END")
             System.exit(1)
           }
         }
-      if (CONSTANTS.SPECIALCHAR.contains(nextC)) {
+      }
+      else if (CONSTANTS.HEADING.contains(nextC)) {
+        addChar()
+        tokenS += readFully()
+      }
+      else if (CONSTANTS.IMAGEB.charAt(0) == nextC) {
+        addChar()
+        getChar()
+        if (CONSTANTS.IMAGEB.charAt(1) == nextC) {
+          addChar()
+          if (lookup()) {
+            if (tokenS.substring(tokenS.length - 1, tokenS.length) == "\n" || tokenS.substring(tokenS.length - 1, tokenS.length) == "\r" || tokenS.substring(tokenS.length - 1, tokenS.length) == "\t") {
+              Compiler.currentToken = tokenS.substring(0, tokenS.length - 1)
+              return
+            }
+            else {
+              Compiler.currentToken = tokenS
+              return
+            }
+          }
+        }
+        else {
+          println("Lexical error. Illegal character after '!'. Received: '" + nextC + "'")
+          System.exit(1)
+        }
+      }
+      else if (CONSTANTS.SPECIALCHAR.contains(nextC)) {
         addChar()
       }
-      else if (nextC.isLetterOrDigit ||nextC==':' || nextC=='.' || nextC==',') {
+      if (tokenS.length > 0 && lookup()) {
+        if (tokenS.substring(tokenS.length - 1, tokenS.length) == "\n" || tokenS.substring(tokenS.length - 1, tokenS.length) == "\r" || tokenS.substring(tokenS.length - 1, tokenS.length) == "\t") {
+          Compiler.currentToken = tokenS.substring(0, tokenS.length - 1)
+        }
+        else Compiler.currentToken = tokenS
+      }
+      else {
+        println("Lexical error: Illegal token received: '" + tokenS + "'")
+        System.exit(1)
+      }
+    }
+    else if (nextC.isLetterOrDigit ||nextC==':' || nextC=='.' || nextC==',') {
         addChar()
         tokenS += readFully()
         if (nextC.toString.equals(CONSTANTS.ADDRESSE) || nextC.toString.equals(CONSTANTS.BRACKETE) || nextC.toString.equals(CONSTANTS.PARAE) || nextC.toString.equals(CONSTANTS.EQSIGN) || nextC.equals('\\')) {
@@ -106,13 +121,6 @@ class MyLexicalAnalyzer extends LexicalAnalyzer{
         }
         Compiler.currentToken = tokenS
       }
-      if (tokenS.length > 0 && lookup()) {
-        if (tokenS.substring(tokenS.length - 1, tokenS.length) == "\n" || tokenS.substring(tokenS.length - 1, tokenS.length) == "\r" || tokenS.substring(tokenS.length - 1, tokenS.length) == "\t") {
-          Compiler.currentToken = tokenS.substring(0, tokenS.length - 1)
-        }
-        else Compiler.currentToken = tokenS
-      }
-    }
   }
 
   def readFully() : String = { //Reads in text until end of word, line or token
